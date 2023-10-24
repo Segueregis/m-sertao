@@ -4,10 +4,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:moto_sertao_flutter/global/global.dart';
 import 'package:moto_sertao_flutter/infoHandler/app_info.dart';
+import 'package:moto_sertao_flutter/mainScreens/search_places_screen.dart';
 import 'package:moto_sertao_flutter/widgets/my_drawer.dart';
 import 'package:provider/provider.dart';
 
 import '../assistants/assistant_methods.dart';
+
 
 
 class MainScreen extends StatefulWidget {
@@ -217,8 +219,7 @@ class _MainScreenState extends State<MainScreen>
     }
   }
 
-  locateUserPosition() async
-  {
+  locateUserPosition(BuildContext context) async {
     Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     userCurrentPosition = cPosition;
 
@@ -231,6 +232,8 @@ class _MainScreenState extends State<MainScreen>
     String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoOrdinates(userCurrentPosition!, context);
     print("this is your address = $humanReadableAddress");
   }
+
+
 
 
 
@@ -247,7 +250,7 @@ class _MainScreenState extends State<MainScreen>
   {
     return Scaffold(
       key: sKey,
-      drawer: Container(
+      drawer: SizedBox(
         width: 265,
         child: Theme(
           data: Theme.of(context).copyWith(
@@ -281,7 +284,7 @@ class _MainScreenState extends State<MainScreen>
                 bottomPaddingOfMap = 240;
               });
 
-              locateUserPosition();
+              locateUserPosition(context);
 
 
             },
@@ -327,29 +330,6 @@ class _MainScreenState extends State<MainScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
                   child: Column(
                     children: [
-                      //from
-                       Row(
-                        children: [
-                          Icon(Icons.add_location_alt_outlined, color: Colors.grey,),
-                          SizedBox(width: 12.0,),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "De",
-                                style: TextStyle(color: Colors.black, fontSize: 12),
-                              ),
-                              Text(
-                                Provider.of<AppInfo>(context).userPickUpLocation != null
-                                    ? (Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0,24) + "..."
-                                    : "not getting address",
-  
-                                style: TextStyle(color: Colors.black, fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
 
                       const SizedBox(height: 10.0),
 
@@ -362,25 +342,30 @@ class _MainScreenState extends State<MainScreen>
                       const SizedBox(height: 16.0),
 
                       //to
-                      const Row(
-                        children: [
-                          Icon(Icons.add_location_alt_outlined, color: Colors.grey,),
-                          SizedBox(width: 12.0,),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Para",
-                                style: TextStyle(color: Colors.black, fontSize: 12),
-                              ),
-                              Text(
-                                "Para onde?",
-                                style: TextStyle(color: Colors.black, fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        ],
+                      GestureDetector(
+                        onTap: ()
+                        {
+
+                          Navigator.push(context, MaterialPageRoute(builder: (c) =>  const SearchPlacesScreen()));
+
+                        },
+                        child: const Row(
+                          children: [
+                            Icon(Icons.search, color: Colors.deepOrange,),
+                            SizedBox(width: 12.0,),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Para  onde vamos?",
+                                  style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
+
 
                       const SizedBox(height: 10.0),
 
@@ -400,11 +385,11 @@ class _MainScreenState extends State<MainScreen>
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.yellow,
                             textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-
                         child: const Text(
-                          "Solicite uma viagem",
-                          style: TextStyle(color: Colors.black,),
-                        ),
+                          "Solicite uma Viajem.",
+                          style: TextStyle(color: Colors.black),
+                              ),
+
                       ),
 
                     ],
