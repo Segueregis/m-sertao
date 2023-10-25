@@ -330,6 +330,8 @@ class _MainScreenState extends State<MainScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
                   child: Column(
                     children: [
+                      //from
+
 
                       const SizedBox(height: 10.0),
 
@@ -346,10 +348,15 @@ class _MainScreenState extends State<MainScreen>
                         onTap: ()
                         {
 
-                          Navigator.push(context, MaterialPageRoute(builder: (c) =>  const SearchPlacesScreen()));
+                          var responseFromSearchScreen = Navigator.push(context, MaterialPageRoute(builder: (c) =>  const SearchPlacesScreen()));
+
+                          if(responseFromSearchScreen == "obtainedDropoff")
+                          {
+                            //desenhar rotas - desenhar polilinha
+                          }
 
                         },
-                        child: const Row(
+                        child: Row(
                           children: [
                             Icon(Icons.search, color: Colors.deepOrange,),
                             SizedBox(width: 12.0,),
@@ -357,7 +364,10 @@ class _MainScreenState extends State<MainScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Para  onde vamos?",
+                                  Provider.of<AppInfo>(context).userDropOffLocation != null
+                                      ? Provider.of<AppInfo>(context).userDropOffLocation!.locationName!
+                                      : "Para  onde vamos?",
+
                                   style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
                                 ),
                               ],

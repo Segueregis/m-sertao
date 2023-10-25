@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../assistants/request_assistant.dart';
 import '../global/map_key.dart';
+import '../infoHandler/app_info.dart';
 import '../models/predicted_places.dart';
 import '../widgets/place_prediction_tile.dart';
 
@@ -56,7 +58,7 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen>
         children: [
           //search place ui
           Container(
-            height: 160,
+            height: 220,
             decoration: const BoxDecoration(
               color: Colors.white,
               boxShadow:
@@ -96,7 +98,7 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen>
 
                       const Center(
                         child: Text(
-                          "Para onde?",
+                          "Usuario",
                           style: TextStyle(
                             fontSize: 18.0,
                             color: Colors.black,
@@ -109,22 +111,40 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen>
 
                   const SizedBox(height: 16.0),
 
+                  //from
                   Row(
                     children: [
-
-                      const Icon(
-                        Icons.adjust_sharp,
-                        color: Colors.grey,
+                      const Icon(Icons.location_on, color: Colors.grey),
+                      const SizedBox(width: 12.0),
+                      Container(
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFEFEFEE),
+                        ),
+                        padding: const EdgeInsets.all(11.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              Provider.of<AppInfo>(context).userPickUpLocation != null
+                                  ? (Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0, 26) + "..."
+                                  : "Procurando endereço...",
+                              style: const TextStyle(color: Colors.black, fontSize: 14),
+                            ),
+                          ],
+                        ),
                       ),
+                    ],
+                  ),
 
-                      const SizedBox(width: 18.0,),
-
+                  Row(
+                    children: [
+                      const Icon(Icons.adjust_sharp, color: Colors.grey),
+                      const SizedBox(width: 18.0),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: TextField(
-                            onChanged: (valueTyped)
-                            {
+                            onChanged: (valueTyped) {
                               findPlaceAutoCompleteSearch(valueTyped);
                             },
                             decoration: const InputDecoration(
@@ -132,18 +152,14 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen>
                               fillColor: Color(0xFFEFEFEE),
                               filled: true,
                               border: InputBorder.none,
-                              contentPadding: EdgeInsets.only(
-                                  left: 11.0,
-                                  top: 8.0,
-                                  bottom: 8.0,
-                              ),
+                              contentPadding: EdgeInsets.all(11.0),
                             ),
                           ),
                         ),
                       ),
-
                     ],
                   ),
+
                 ],
               ),
             ),
