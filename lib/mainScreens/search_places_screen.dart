@@ -111,34 +111,13 @@ class _SearchPlacesScreenState extends State<SearchPlacesScreen>
 
                   const SizedBox(height: 16.0),
 
-                  //from
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on, color: Colors.grey),
-                      const SizedBox(width: 12.0),
-                      Container(
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFEFEFEE),
-                        ),
-                        padding: const EdgeInsets.all(11.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              Provider.of<AppInfo>(context).userPickUpLocation != null
-                                  ? (Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0, 26) + "..."
-                                  : "Procurando endereço...",
-                              style: const TextStyle(color: Colors.black, fontSize: 14),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
 
                   Row(
                     children: [
-                      const Icon(Icons.adjust_sharp, color: Colors.grey),
+                      const Icon(
+                          Icons.location_on,
+                          color: Colors.black
+                      ),
                       const SizedBox(width: 18.0),
                       Expanded(
                         child: Padding(

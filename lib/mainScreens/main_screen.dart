@@ -331,6 +331,29 @@ class _MainScreenState extends State<MainScreen>
                   child: Column(
                     children: [
                       //from
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on,
+                            color: Colors.black,
+                          ),
+                          const SizedBox(width: 12.0,),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "De",
+                                style: TextStyle(color: Colors.black, fontSize: 14),
+                              ),
+                              Text(
+                                Provider.of<AppInfo>(context).userPickUpLocation != null
+                                    ? (Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0,26) + "..."
+                                    : "not getting address",
+                                style: const TextStyle(color: Colors.black, fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
 
 
                       const SizedBox(height: 10.0),
@@ -366,7 +389,7 @@ class _MainScreenState extends State<MainScreen>
                                 Text(
                                   Provider.of<AppInfo>(context).userDropOffLocation != null
                                       ? Provider.of<AppInfo>(context).userDropOffLocation!.locationName!
-                                      : "Para  onde vamos?",
+                                      : "Para onde vamos?",
 
                                   style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
                                 ),
