@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -49,6 +50,11 @@ class _MainScreenState extends State<MainScreen>
 
   Set<Marker> markersSet = {};
   Set<Circle> circlesSet = {};
+
+  String userName = "your Name";
+  String userEmail = "your Email";
+
+  bool openNavigationDrawer = true;
 
   blackThemeGoogleMap()
   {
@@ -241,6 +247,9 @@ class _MainScreenState extends State<MainScreen>
     String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoOrdinates(userCurrentPosition!, context);
     if (kDebugMode) {
       print("this is your address = $humanReadableAddress");
+
+      userName = userModelCurrentInfo!.name!;
+      userEmail = userModelCurrentInfo!.email!;
     }
   }
 
@@ -268,8 +277,8 @@ class _MainScreenState extends State<MainScreen>
            canvasColor: Colors.white,
           ),
           child: MyDrawer(
-            name: userModelCurrentInfo!.name,
-            email: userModelCurrentInfo!.email,
+            name: userName,
+            email: userEmail,
           ),
         ),
       ),
@@ -311,12 +320,20 @@ class _MainScreenState extends State<MainScreen>
             child: GestureDetector(
               onTap: ()
               {
-                sKey.currentState!.openDrawer();
+                if(openNavigationDrawer)
+                {
+                  sKey.currentState!.openDrawer();
+                }
+                else
+                {
+                  //restart-refresh-minimize app progmatically
+                  SystemNavigator.pop();
+                }
               },
-              child: const CircleAvatar(
-                backgroundColor: Colors.white,
+              child: CircleAvatar(
+                backgroundColor: Colors.grey,
                 child: Icon(
-                  Icons.menu,
+                  openNavigationDrawer ? Icons.menu : Icons.close,
                   color: Colors.black,
                 ),
               ),
@@ -389,6 +406,11 @@ class _MainScreenState extends State<MainScreen>
 
                           if(responseFromSearchScreen == "obtainedDropoff")
                           {
+                            setState(() {
+                              openNavigationDrawer = false;
+                            });
+
+
                             //desenhar rotas - desenhar polilinha
                             await drawPolyLineFromOriginToDestination();
                           }
