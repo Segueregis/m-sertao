@@ -517,6 +517,7 @@ class _MainScreenState extends State<MainScreen>
         startCap: Cap.roundCap,
         endCap: Cap.roundCap,
         geodesic: true,
+        width: 3, // Defina um valor menor para tornar a linha mais fina
       );
 
       polyLineSet.add(polyline);
