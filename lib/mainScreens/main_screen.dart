@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_geofire/flutter_geofire.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,6 +13,8 @@ import 'package:moto_sertao_flutter/widgets/my_drawer.dart';
 import 'package:provider/provider.dart';
 
 import '../assistants/assistant_methods.dart';
+import '../assistants/geofire_assistant.dart';
+import '../models/active_nearby_available_drivers.dart';
 import '../widgets/progress_dialog.dart';
 
 
@@ -55,6 +58,8 @@ class _MainScreenState extends State<MainScreen>
   String userEmail = "your Email";
 
   bool openNavigationDrawer = true;
+  bool activeNearbyDriversKeysLoaded = false;
+  BitmapDescriptor? activeNearbyIcon;
 
   blackThemeGoogleMap()
   {
@@ -234,7 +239,8 @@ class _MainScreenState extends State<MainScreen>
     }
   }
 
-  locateUserPosition(BuildContext context) async {
+  locateUserPosition(BuildContext context) async
+  {
     Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     userCurrentPosition = cPosition;
 
@@ -250,6 +256,8 @@ class _MainScreenState extends State<MainScreen>
 
       userName = userModelCurrentInfo!.name!;
       userEmail = userModelCurrentInfo!.email!;
+
+      initializeGeoFireListener();
     }
   }
 
@@ -268,6 +276,8 @@ class _MainScreenState extends State<MainScreen>
   @override
   Widget build(BuildContext context)
   {
+    createActiveNearByDriverIconMarker();
+
     return Scaffold(
       key: sKey,
       drawer: SizedBox(
@@ -590,5 +600,105 @@ class _MainScreenState extends State<MainScreen>
       circlesSet.add(originCircle);
       circlesSet.add(destinationCircle);
     });
+  }
+
+  initializeGeoFireListener()
+  {
+    Geofire.initialize("activeMotorcyclists");
+
+    Geofire.queryAtLocation(
+        userCurrentPosition!.latitude, userCurrentPosition!.longitude, 10)!
+        .listen((map) {
+      print(map);
+      if (map != null) {
+        var callBack = map['callBack'];
+
+        //a latitude será recuperada do mapa['latitude']
+        //a longitude será recuperada do mapa['longitude']
+
+        switch (callBack)
+            {
+            //sempre que algum motociclista fica ativo/online
+            case Geofire.onKeyEntered:
+              ActiveNearbyAvailableDrivers activeNearbyAvailableDriver = ActiveNearbyAvailableDrivers();
+              activeNearbyAvailableDriver.locationLatitude = map['latitude'];
+              activeNearbyAvailableDriver.locationLongitude = map['longitude'];
+              activeNearbyAvailableDriver.driverId = map['key'];
+              GeoFireAssistant.activeNearbyAvailableDriversList.add(activeNearbyAvailableDriver);
+              if(activeNearbyDriversKeysLoaded == true)
+                {
+                  displayActiveDriversOnUsersMap();
+                }
+              break;
+
+           //sempre que algum motociclista fica inativo/offline
+          case Geofire.onKeyExited:
+            GeoFireAssistant.deleteOfflineDriverFromList(map['key']);
+            displayActiveDriversOnUsersMap();
+            break;
+
+           //sempre que o motociclista se move - atualize a localização do motociclista
+          case Geofire.onKeyMoved:
+            ActiveNearbyAvailableDrivers activeNearbyAvailableDriver = ActiveNearbyAvailableDrivers();
+            activeNearbyAvailableDriver.locationLatitude = map['latitude'];
+            activeNearbyAvailableDriver.locationLongitude = map['longitude'];
+            activeNearbyAvailableDriver.driverId = map['key'];
+            GeoFireAssistant.updateActiveNearbyAvailableDriverLocation(activeNearbyAvailableDriver);
+            displayActiveDriversOnUsersMap();
+            break;
+
+           //exibe os motociclistas online/ativos no mapa do usuário
+          case Geofire.onGeoQueryReady:
+            displayActiveDriversOnUsersMap();
+            break;
+
+        }
+      }
+
+      setState(() {});
+          });
+       }
+
+  displayActiveDriversOnUsersMap()
+  {
+    setState(() {
+      markersSet.clear();
+      circlesSet.clear();
+
+      Set<Marker> driversMarkerSet = Set<Marker>();
+      for(ActiveNearbyAvailableDrivers eachDriver in GeoFireAssistant.activeNearbyAvailableDriversList)
+      {
+        LatLng eachDriverActivePosition = LatLng(eachDriver.locationLatitude!, eachDriver.locationLongitude!);
+
+        Marker marker = Marker(
+          markerId: MarkerId("Motorcyclists"+eachDriver.driverId!),
+          position: eachDriverActivePosition,
+          icon: activeNearbyIcon!,
+          rotation: 360,
+        );
+
+        driversMarkerSet.add(marker);
+
+      }
+      setState(() {
+        markersSet = driversMarkerSet;
+      });
+
+
+    });
+
+
+  }
+
+  createActiveNearByDriverIconMarker()
+  {
+    if(activeNearbyIcon == null)
+    {
+      ImageConfiguration imageConfiguration = createLocalImageConfiguration(context, size: const Size(2, 2));
+      BitmapDescriptor.fromAssetImage(imageConfiguration, "images/moto.png").then((value)
+      {
+        activeNearbyIcon = value;
+      });
+    }
   }
 }

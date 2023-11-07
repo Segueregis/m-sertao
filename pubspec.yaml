@@ -48,6 +48,7 @@ dependencies:
   http: ^1.1.0
   provider: ^6.0.5
   flutter_polyline_points: ^2.0.0
+  flutter_geofire: ^2.0.3
 
 dev_dependencies:
   flutter_test:
@@ -80,7 +81,7 @@ flutter:
      - images/logo_amarela.png
      - images/logo_branca.png
      - images/logo_moto_amarela.png
-     - images/mot.android.png
+     - images/moto.png
      - images/pickicon.png
      - images/posimarker.png
      - images/redmarker.png
